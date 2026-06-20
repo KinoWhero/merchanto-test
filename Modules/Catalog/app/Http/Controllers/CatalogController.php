@@ -46,12 +46,14 @@ class CatalogController extends Controller
 
     /**
      * Update the specified resource in storage.
+     *
      * @return void
      */
     public function update(Request $request, int $id) {}
 
     /**
      * Remove the specified resource from storage.
+     *
      * @return void
      */
     public function destroy(int $id) {}
