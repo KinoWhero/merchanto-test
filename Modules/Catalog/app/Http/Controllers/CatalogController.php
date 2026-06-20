@@ -20,20 +20,21 @@ class CatalogController extends Controller
      */
     public function create()
     {
-        return view('catalog::create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {}
+    public function store(Request $request)
+    {
+    }
 
     /**
      * Show the specified resource.
      */
     public function show($id)
     {
-        return view('catalog::show');
+//        return view('catalog::show');
     }
 
     /**
@@ -41,16 +42,19 @@ class CatalogController extends Controller
      */
     public function edit($id)
     {
-        return view('catalog::edit');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id) {}
+    public function update(Request $request, $id)
+    {
+    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id) {}
+    public function destroy($id)
+    {
+    }
 }

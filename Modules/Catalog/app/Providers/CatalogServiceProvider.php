@@ -2,8 +2,8 @@
 
 namespace Modules\Catalog\Providers;
 
+use Livewire\Livewire;
 use Nwidart\Modules\Support\ModuleServiceProvider;
-use Illuminate\Console\Scheduling\Schedule;
 
 class CatalogServiceProvider extends ModuleServiceProvider
 {
@@ -36,11 +36,21 @@ class CatalogServiceProvider extends ModuleServiceProvider
 
     /**
      * Define module schedules.
-     * 
-     * @param $schedule
+     *
+     * @param  $schedule
      */
     // protected function configureSchedules(Schedule $schedule): void
     // {
     //     $schedule->command('inspire')->hourly();
     // }
+
+    public function boot(): void
+    {
+        $this->loadViewsFrom(module_path('Catalog', 'resources/views'), 'catalog');
+
+        Livewire::addNamespace(
+            namespace: 'catalog',
+            viewPath: module_path('Catalog', 'resources/views/components'),
+        );
+    }
 }
