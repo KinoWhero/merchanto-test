@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -12,7 +13,7 @@ new class extends Component {
     public int $perPage = 10;
 
     #[Computed]
-    public function orders(): \Illuminate\Pagination\LengthAwarePaginator
+    public function orders(): LengthAwarePaginator
     {
         return Order::query()
             ->orderBy('orders.updated_at')

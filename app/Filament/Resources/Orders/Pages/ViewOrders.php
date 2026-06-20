@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Orders\Pages;
 
 use App\Filament\Resources\Orders\OrdersResource;
 use Filament\Actions\EditAction;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -14,13 +14,6 @@ use Modules\Order\Enums\OrderStatus;
 class ViewOrders extends ViewRecord
 {
     protected static string $resource = OrdersResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            EditAction::make(),
-        ];
-    }
 
     public function infolist(Schema $schema): Schema
     {
@@ -59,5 +52,12 @@ class ViewOrders extends ViewRecord
                             ->columns(4),
                     ]),
             ]);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            EditAction::make(),
+        ];
     }
 }

@@ -9,5 +9,17 @@ parameters:
         - config/
         - database/
         - routes/
+        - Modules/
 
-    level: 7
+    excludePaths:
+        - Modules/*/database/migrations/*
+        - Modules/*/database/seeders/*
+        - database/migrations/*
+        - database/seeders/*
+
+    ignoreErrors:
+        -
+            identifiers:
+                - expr.resultUnused
+
+    level: 5

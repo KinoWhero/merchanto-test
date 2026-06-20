@@ -22,16 +22,6 @@ class EditOrders extends EditRecord
 {
     protected static string $resource = OrdersResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            ViewAction::make(),
-            DeleteAction::make(),
-            ForceDeleteAction::make(),
-            RestoreAction::make(),
-        ];
-    }
-
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -125,5 +115,15 @@ class EditOrders extends EditRecord
                             ->addable(false),
                     ]),
             ]);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            ViewAction::make(),
+            DeleteAction::make(),
+            ForceDeleteAction::make(),
+            RestoreAction::make(),
+        ];
     }
 }

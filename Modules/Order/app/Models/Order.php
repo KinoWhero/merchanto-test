@@ -32,18 +32,21 @@ class Order extends Model
         'total_amount',
     ];
 
+    /**
+     * @return HasMany<OrderItem, $this>
+     */
+    public function items(): HasMany
+    {
+        return $this
+            ->hasMany(OrderItem::class)
+            ->orderBy('product_name');
+    }
+
     protected function casts(): array
     {
         return [
             'status' => OrderStatus::class,
             'total_amount' => 'decimal:2',
         ];
-    }
-
-    public function items(): HasMany
-    {
-        return $this
-            ->hasMany(OrderItem::class)
-            ->orderBy('product_name');
     }
 }

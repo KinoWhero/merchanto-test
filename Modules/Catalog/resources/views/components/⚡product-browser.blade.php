@@ -1,18 +1,21 @@
 <?php
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Modules\Catalog\Models\Product;
 
-new class extends Component
-{
+new class extends Component {
     use WithPagination;
 
     public int $perPage = 10;
 
+    /**
+     * @return LengthAwarePaginator
+     */
     #[Computed]
-    public function products(): \Illuminate\Pagination\LengthAwarePaginator
+    public function products(): LengthAwarePaginator
     {
         return Product::query()
             ->with('category')
@@ -42,47 +45,48 @@ new class extends Component
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-800 text-sm">
                     <thead class="bg-gray-900/80 text-left text-xs font-semibold uppercase tracking-wide text-gray-400">
-                        <tr>
-                            <th scope="col" class="px-6 py-4">Name</th>
-                            <th scope="col" class="px-6 py-4">Category</th>
-                            <th scope="col" class="px-6 py-4">Price</th>
-                            <th scope="col" class="px-6 py-4">Stock</th>
-                        </tr>
+                    <tr>
+                        <th scope="col" class="px-6 py-4">Name</th>
+                        <th scope="col" class="px-6 py-4">Category</th>
+                        <th scope="col" class="px-6 py-4">Price</th>
+                        <th scope="col" class="px-6 py-4">Stock</th>
+                    </tr>
                     </thead>
 
                     <tbody class="divide-y divide-gray-800">
-                        @forelse ($this->products as $product)
-                            <tr class="transition hover:bg-gray-800/40">
-                                <td class="px-6 py-4">
-                                    <div class="font-medium text-white">{{ $product->name }}</div>
-                                    @if ($product->description)
-                                        <div class="mt-1 max-w-xl truncate text-xs text-gray-400">
-                                            {{ $product->description }}
-                                        </div>
-                                    @endif
-                                </td>
+                    @forelse ($this->products as $product)
+                        <tr class="transition hover:bg-gray-800/40">
+                            <td class="px-6 py-4">
+                                <div class="font-medium text-white">{{ $product->name }}</div>
+                                @if ($product->description)
+                                    <div class="mt-1 max-w-xl truncate text-xs text-gray-400">
+                                        {{ $product->description }}
+                                    </div>
+                                @endif
+                            </td>
 
-                                <td class="px-6 py-4 text-gray-300">
-                                    {{ $product->category?->name ?? 'Uncategorized' }}
-                                </td>
+                            <td class="px-6 py-4 text-gray-300">
+                                {{ $product->category?->name ?? 'Uncategorized' }}
+                            </td>
 
-                                <td class="px-6 py-4 font-medium text-gray-100">
-                                    €{{ number_format((float) $product->price, 2) }}
-                                </td>
+                            <td class="px-6 py-4 font-medium text-gray-100">
+                                €{{ number_format((float) $product->price, 2) }}
+                            </td>
 
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex rounded-full border border-gray-700 px-2.5 py-1 text-xs font-medium text-gray-300">
+                            <td class="px-6 py-4">
+                                    <span
+                                        class="inline-flex rounded-full border border-gray-700 px-2.5 py-1 text-xs font-medium text-gray-300">
                                         {{ $product->stock_quantity }} available
                                     </span>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="px-6 py-12 text-center text-sm text-gray-400">
-                                    No products available yet.
-                                </td>
-                            </tr>
-                        @endforelse
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-6 py-12 text-center text-sm text-gray-400">
+                                No products available yet.
+                            </td>
+                        </tr>
+                    @endforelse
                     </tbody>
                 </table>
             </div>

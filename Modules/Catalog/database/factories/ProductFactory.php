@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Catalog\Models\Product;
 use Modules\Catalog\Models\ProductCategory;
 
+/**
+ * @extends Factory<Product>
+ */
 class ProductFactory extends Factory
 {
     /**

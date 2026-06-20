@@ -84,8 +84,8 @@ new class extends Component {
     public function updatedItems(): void
     {
         foreach ($this->items as $productId => $item) {
-            $quantity = max(1, (int)($item['quantity'] ?? 1));
-            $stockQuantity = max(1, (int)($item['stock_quantity'] ?? 1));
+            $quantity = max(1, $item['quantity']);
+            $stockQuantity = max(1, $item['stock_quantity']);
 
             $this->items[$productId]['quantity'] = min($quantity, $stockQuantity);
         }
@@ -109,7 +109,7 @@ new class extends Component {
                 'customer_phone' => $this->customerPhone,
                 'customer_address' => $this->customerAddress,
                 'status' => OrderStatus::Pending->value,
-                'total_amount' => $this->totalAmount,
+                'total_amount' => $this->totalAmount(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -343,7 +343,7 @@ new class extends Component {
 
                             <div class="mb-4 flex items-center justify-between text-base font-semibold text-white">
                                 <span>Total</span>
-                                <span>€{{ number_format($this->totalAmount, 2) }}</span>
+                                <span>USD{{ number_format($this->totalAmount(), 2) }}</span>
                             </div>
 
                             <button
