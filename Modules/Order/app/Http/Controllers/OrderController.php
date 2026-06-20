@@ -20,7 +20,7 @@ class OrderController extends Controller
      */
     public function create()
     {
-        return view('order::create');
+//        return view('order::create');
     }
 
     /**
@@ -33,7 +33,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        return view('order::show');
+//        return view('order::show');
     }
 
     /**
@@ -41,7 +41,7 @@ class OrderController extends Controller
      */
     public function edit($id)
     {
-        return view('order::edit');
+//        return view('order::edit');
     }
 
     /**

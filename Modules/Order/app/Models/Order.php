@@ -8,6 +8,14 @@ use Modules\Order\Enums\OrderStatus;
 
 // use Modules\Order\Database\Factories\OrderFactory;
 
+/**
+ * @property int $id
+ * @property string $customer_name
+ * @property string $customer_email
+ * @property string $customer_phone
+ * @property string $customer_address
+ * @property OrderStatus $status
+ */
 class Order extends Model
 {
     use HasFactory;
@@ -15,7 +23,13 @@ class Order extends Model
     /**
      * The attributes that are mass-assignable.
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'customer_name',
+        'customer_email',
+        'customer_phone',
+        'customer_address',
+        'status',
+    ];
 
     protected function casts(): array
     {

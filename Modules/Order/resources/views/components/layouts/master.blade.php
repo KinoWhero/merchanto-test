@@ -19,6 +19,9 @@
 
         {{-- Vite CSS --}}
         {{-- {{ module_vite('build-order', 'resources/assets/sass/app.scss') }} --}}
+
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @livewireStyles
     </head>
 
     <body>
@@ -26,5 +29,7 @@
 
         {{-- Vite JS --}}
         {{-- {{ module_vite('build-order', 'resources/assets/js/app.js') }} --}}
+
+        @livewireScripts
     </body>
 </html>
