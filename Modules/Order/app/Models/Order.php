@@ -4,6 +4,7 @@ namespace Modules\Order\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Order\Enums\OrderStatus;
 
 // use Modules\Order\Database\Factories\OrderFactory;
@@ -19,6 +20,7 @@ use Modules\Order\Enums\OrderStatus;
 class Order extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass-assignable.
