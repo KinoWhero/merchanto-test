@@ -2,8 +2,10 @@
 
 namespace Modules\Order\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Order\Database\Factories\OrderItemFactory;
 
 /**
  * @property int $id
@@ -17,6 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class OrderItem extends Model
 {
+    use HasFactory;
     use SoftDeletes;
 
     /**
@@ -31,4 +34,14 @@ class OrderItem extends Model
         'total_price',
         'quantity',
     ];
+
+    protected $casts = [
+        'unit_price' => 'decimal:2',
+        'total_price' => 'decimal:2',
+    ];
+
+    protected static function newFactory(): OrderItemFactory
+    {
+        return OrderItemFactory::new();
+    }
 }

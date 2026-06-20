@@ -53,4 +53,9 @@ class Product extends Model
             'stock_quantity' => 'integer',
         ];
     }
+
+    protected static function newFactory(): ProductFactory
+    {
+        return ProductFactory::new();
+    }
 }
