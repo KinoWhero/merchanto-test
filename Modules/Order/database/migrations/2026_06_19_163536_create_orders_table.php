@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('customer_email');
             $table->string('customer_phone')->nullable();
             $table->text('customer_address')->nullable();
+            $table->decimal('total_amount', 12);
             $table->string('status')->default('pending');
             $table->timestamps();
             $table->softDeletes();

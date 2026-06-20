@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('product_name');
             $table->text('description')->nullable();
             $table->decimal('unit_price', 12);
+            $table->decimal('total_price', 12);
             $table->unsignedInteger('quantity');
             $table->timestamps();
             $table->softDeletes();
