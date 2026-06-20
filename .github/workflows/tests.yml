@@ -48,15 +48,20 @@ jobs:
       - name: Add Flux Credentials Loaded From ENV
         run: composer config http-basic.composer.fluxui.dev "${{ secrets.FLUX_USERNAME }}" "${{ secrets.FLUX_LICENSE_KEY }}"
 
+      - name: Prepare Laravel Directories
+        run: |
+          mkdir -p bootstrap/cache
+          mkdir -p storage/framework/cache
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/framework/views
+          chmod -R 775 bootstrap/cache storage
+
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Prepare Laravel Environment
         run: |
           cp .env.example .env
-          mkdir -p bootstrap/cache
-          mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views
-          chmod -R 775 bootstrap/cache storage
           php artisan key:generate --ansi
           php artisan about
 
