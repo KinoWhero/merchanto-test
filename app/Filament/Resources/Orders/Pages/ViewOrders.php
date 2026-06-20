@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Orders\Pages;
 use App\Filament\Resources\Orders\OrdersResource;
 use Filament\Actions\EditAction;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -45,6 +46,20 @@ class ViewOrders extends ViewRecord
                         TextEntry::make('customer_email'),
                         TextEntry::make('customer_phone'),
                         TextEntry::make('customer_address'),
+                    ]),
+
+                Section::make('Order items')
+                    ->columnSpanFull()
+                    ->schema([
+                        RepeatableEntry::make('items')
+                            ->label('')
+                            ->schema([
+                                TextEntry::make('product_name')->label('Product'),
+                                TextEntry::make('quantity')->numeric(),
+                                TextEntry::make('unit_price')->money('USD'),
+                                TextEntry::make('total_price')->money('USD'),
+                            ])
+                            ->columns(4),
                     ]),
             ]);
     }

@@ -3,11 +3,9 @@
 namespace Modules\Order\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Order\Enums\OrderStatus;
-
-// use Modules\Order\Database\Factories\OrderFactory;
 
 /**
  * @property int $id
@@ -16,10 +14,10 @@ use Modules\Order\Enums\OrderStatus;
  * @property string $customer_phone
  * @property string $customer_address
  * @property OrderStatus $status
+ * @property float $total_amount
  */
 class Order extends Model
 {
-    use HasFactory;
     use SoftDeletes;
 
     /**
@@ -40,5 +38,10 @@ class Order extends Model
             'status' => OrderStatus::class,
             'total_amount' => 'decimal:2',
         ];
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
     }
 }
