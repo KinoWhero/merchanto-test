@@ -38,6 +38,11 @@ class Product extends Model
         'stock_quantity',
     ];
 
+    protected static function newFactory(): ProductFactory
+    {
+        return ProductFactory::new();
+    }
+
     /**
      * @return BelongsTo<ProductCategory, $this>
      */
@@ -52,10 +57,5 @@ class Product extends Model
             'price' => 'decimal:2',
             'stock_quantity' => 'integer',
         ];
-    }
-
-    protected static function newFactory(): ProductFactory
-    {
-        return ProductFactory::new();
     }
 }

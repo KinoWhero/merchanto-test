@@ -51,11 +51,14 @@ jobs:
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Copy Environment File
-        run: cp .env.example .env
-
-      - name: Generate Application Key
-        run: php artisan key:generate
+      - name: Prepare Laravel Environment
+        run: |
+          cp .env.example .env
+          mkdir -p bootstrap/cache
+          mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views
+          chmod -R 775 bootstrap/cache storage
+          php artisan key:generate --ansi
+          php artisan about
 
       - name: Build Assets
         run: npm run build

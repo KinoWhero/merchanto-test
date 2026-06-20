@@ -24,16 +24,16 @@ class ProductCategory extends Model
         'name',
     ];
 
+    protected static function newFactory(): ProductCategoryFactory
+    {
+        return ProductCategoryFactory::new();
+    }
+
     /**
      * @return HasMany<Product, $this>
      */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class, 'category_id');
-    }
-
-    protected static function newFactory(): ProductCategoryFactory
-    {
-        return ProductCategoryFactory::new();
     }
 }

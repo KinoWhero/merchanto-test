@@ -35,6 +35,11 @@ class Order extends Model
         'total_amount',
     ];
 
+    protected static function newFactory(): OrderFactory
+    {
+        return OrderFactory::new();
+    }
+
     /**
      * @return HasMany<OrderItem, $this>
      */
@@ -51,10 +56,5 @@ class Order extends Model
             'status' => OrderStatus::class,
             'total_amount' => 'decimal:2',
         ];
-    }
-
-    protected static function newFactory(): OrderFactory
-    {
-        return OrderFactory::new();
     }
 }

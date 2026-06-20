@@ -43,6 +43,11 @@ class User extends Authenticatable implements FilamentUser
             ->implode('');
     }
 
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true;
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -54,10 +59,5 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return true;
     }
 }
