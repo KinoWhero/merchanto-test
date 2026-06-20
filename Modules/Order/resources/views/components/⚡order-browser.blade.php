@@ -31,6 +31,13 @@ new class extends Component {
                         Browse available orders from the Order module.
                     </p>
                 </div>
+
+                <a
+                    href="{{ route('order.create') }}"
+                    class="inline-flex items-center rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-gray-950 transition hover:bg-amber-400"
+                >
+                    + Add order
+                </a>
             </div>
 
             <div class="overflow-hidden rounded-xl border border-gray-800 bg-gray-900 shadow-sm">
