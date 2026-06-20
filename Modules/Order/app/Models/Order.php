@@ -31,12 +31,14 @@ class Order extends Model
         'customer_phone',
         'customer_address',
         'status',
+        'total_amount',
     ];
 
     protected function casts(): array
     {
         return [
             'status' => OrderStatus::class,
+            'total_amount' => 'decimal:2',
         ];
     }
 }
