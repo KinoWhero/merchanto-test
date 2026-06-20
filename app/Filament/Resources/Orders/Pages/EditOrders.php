@@ -65,10 +65,10 @@ class EditOrders extends EditRecord
                         Select::make('status')
                             ->required()
                             ->options([
-                                OrderStatus::Pending->value => 'Pending',
-                                OrderStatus::Confirmed->value => 'Confirmed',
-                                OrderStatus::Shipped->value => 'Shipped',
-                                OrderStatus::Delivered->value => 'Delivered',
+                                OrderStatus::Pending->value => OrderStatus::Pending->label(),
+                                OrderStatus::Confirmed->value => OrderStatus::Confirmed->label(),
+                                OrderStatus::Shipped->value => OrderStatus::Shipped->label(),
+                                OrderStatus::Delivered->value => OrderStatus::Delivered->label(),
                             ]),
 
                         TextInput::make('total_amount')
@@ -102,6 +102,7 @@ class EditOrders extends EditRecord
                                         $set('total_price', (float) $get('unit_price') * (int) $get('quantity'));
                                     }),
 
+                                // TODO: Add stock quantity
                                 TextInput::make('quantity')
                                     ->numeric()
                                     ->required()

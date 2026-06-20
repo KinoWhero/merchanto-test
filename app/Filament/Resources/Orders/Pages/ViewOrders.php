@@ -31,11 +31,8 @@ class ViewOrders extends ViewRecord
                         TextEntry::make('id'),
                         TextEntry::make('status')
                             ->badge()
-                            ->color(fn (OrderStatus $state): string => match ($state) {
-                                OrderStatus::Pending => 'gray',
-                                OrderStatus::Confirmed => 'warning',
-                                OrderStatus::Shipped, OrderStatus::Delivered => 'success',
-                            }),
+                            ->color(fn (OrderStatus $state) => $state->color())
+                            ->formatStateUsing(fn (OrderStatus $state) => $state->label()),
                         TextEntry::make('total_amount')
                             ->money('USD'),
                     ]),

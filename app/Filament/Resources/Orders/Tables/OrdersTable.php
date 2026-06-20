@@ -27,11 +27,8 @@ class OrdersTable
                 TextColumn::make('total_amount')->searchable()->label('Order Total')->money('USD'),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn (OrderStatus $state): string => match ($state) {
-                        OrderStatus::Pending => 'gray',
-                        OrderStatus::Confirmed => 'warning',
-                        OrderStatus::Shipped, OrderStatus::Delivered => 'success',
-                    }),
+                    ->color(fn (OrderStatus $state) => $state->color())
+                    ->formatStateUsing(fn (OrderStatus $state) => $state->label()),
             ])
             ->filters([
                 TrashedFilter::make(),

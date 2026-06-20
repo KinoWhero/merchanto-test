@@ -76,7 +76,7 @@ new class extends Component {
                                 </span>
 
                                 <td class="px-6 py-4 font-medium text-gray-100">
-                                    €{{ number_format((float) $order->price, 2) }}
+                                    USD {{ number_format((float) $order->total_amount, 2) }}
                                 </td>
                             </tr>
                         @empty
