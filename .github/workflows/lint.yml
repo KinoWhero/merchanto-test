@@ -41,7 +41,12 @@ jobs:
       - name: Prepare Laravel Environment
         run: |
           cp .env.example .env
-          php artisan key:generate
+          mkdir -p bootstrap/cache
+          mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views
+          chmod -R 775 bootstrap/cache storage
+          php artisan key:generate --ansi
+          php artisan about
+
 
       - name: Run Duster Fix
         run: vendor/bin/duster fix
