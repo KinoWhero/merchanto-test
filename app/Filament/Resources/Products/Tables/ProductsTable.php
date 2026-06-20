@@ -19,6 +19,7 @@ class ProductsTable
         return $table
             ->columns([
                 TextColumn::make('name')->searchable(),
+                TextColumn::make('category.name')->searchable()->label('Category'),
                 TextColumn::make('price')->money('USD'),
                 TextColumn::make('stock_quantity')->numeric(),
             ])
