@@ -42,7 +42,7 @@ new class extends Component {
 
     public function addProduct(int $productId): void
     {
-        $product = $this->products->firstWhere('id', $productId);
+        $product = $this->products()->firstWhere('id', $productId);
 
         if (!$product) {
             $this->addError('items', 'Selected product is no longer available.');
