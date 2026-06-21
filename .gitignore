@@ -24,6 +24,5 @@ yarn-error.log
 /.zed
 
 # Project exclude paths
-/bootstrap/cache/
 /storage/app/
 /storage/framework/
