@@ -102,21 +102,21 @@ instead of directly depending on Catalog models.
 
 ### Inventory Ownership
 
-Inventory is owned exclusively by the Catalog module.
+Inventory is owned exclusively by the `Catalog` module.
 
 The Order module never modifies product stock directly.
 
-Instead, inventory operations are executed through CatalogInterface, ensuring a single source of truth for stock management.
+Instead, inventory operations are executed through `CatalogInterface`, ensuring a single source of truth for stock management.
 
 ### Order Confirmation Workflow
 
-Orders are created in the Pending state.
+Orders are created in the `Pending` state.
 
 Product stock is not reduced during order creation.
 
 When an order is confirmed:
 
-1. Order requests inventory reduction through CatalogInterface
+1. Order requests inventory reduction through `CatalogInterface`
 2. Catalog validates stock availability
 3. Catalog reduces stock inside a database transaction
 4. Order status changes to `Confirmed`
