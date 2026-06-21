@@ -78,6 +78,14 @@ new class extends Component {
                                 <td class="px-6 py-4 font-medium text-gray-100">
                                     USD {{ number_format((float) $order->total_amount, 2) }}
                                 </td>
+                                <td class="px-6 py-4 text-right">
+                                    <a
+                                        href="{{ route('order.show', $order->id) }}"
+                                        class="inline-flex items-center rounded-lg bg-amber-500 px-3 py-2 text-xs font-semibold text-gray-950 transition hover:bg-amber-400"
+                                    >
+                                        View
+                                    </a>
+                                </td>
                             </tr>
                         @empty
                             <tr>
