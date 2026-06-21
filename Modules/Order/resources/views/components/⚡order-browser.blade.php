@@ -4,7 +4,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Modules\Catalog\Models\Product;
 use Modules\Order\Models\Order;
 
 new class extends Component {
@@ -72,8 +71,8 @@ new class extends Component {
 
                                 <td class="px-6 py-4">
                                 <span
-                                    class="inline-flex items-center rounded-full bg-green-500/20 px-2 py-1 text-xs font-medium text-green-500">
-                                    {{ $order->status }}
+                                    class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset {{ $order->status->badgeClasses() }}">
+                                    {{ $order->status->label() }}
                                 </span>
 
                                 <td class="px-6 py-4 font-medium text-gray-100">

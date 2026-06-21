@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Catalog\Database\Factories\ProductCategoryFactory;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ */
 class ProductCategory extends Model
 {
     /**
@@ -22,6 +27,7 @@ class ProductCategory extends Model
      */
     protected $fillable = [
         'name',
+        'slug',
     ];
 
     protected static function newFactory(): ProductCategoryFactory
