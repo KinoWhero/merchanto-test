@@ -27,7 +27,8 @@ The application is divided into independent modules.
 **Responsibilities:**
 
 - Product categories
-- Products
+- Products 
+- Inventory management
 - Public catalog browsing
 
 **Entities:**
@@ -42,12 +43,43 @@ The application is divided into independent modules.
 - Orders
 - Order items
 - Order management
+- Order confirmation workflow
 
 **Entities:**
 
 - Order
 - OrderItem
 
+### Cross-Module Communication:
+The Order module requires access to product information but does not directly depend on Catalog models.
+
+To achieve this, the application introduces an application-level contract:
+
+```text
+app/Contracts/CatalogInterface.php
+```
+The Catalog module provides the implementation, while the Order module consumes the abstraction.
+
+This allows:
+- Loose coupling between modules
+- Independent module evolution
+- Easier future extraction into separate services
+- Clear ownership of inventory operations
+
+```text
+Order Module
+       │
+       ▼
+CatalogInterface
+       ▲
+       │
+Catalog Module
+```
+The contract currently provides:
+
+- Product snapshot retrieval
+- Product availability checks
+- Inventory reduction during order confirmation
 ---
 
 ## Design Decisions
@@ -67,6 +99,33 @@ instead of directly depending on Catalog models.
 - Historical orders remain unchanged when products are modified
 - Reduced coupling between modules
 - Easier future module extraction
+
+### Inventory Ownership
+
+Inventory is owned exclusively by the Catalog module.
+
+The Order module never modifies product stock directly.
+
+Instead, inventory operations are executed through CatalogInterface, ensuring a single source of truth for stock management.
+
+### Order Confirmation Workflow
+
+Orders are created in the Pending state.
+
+Product stock is not reduced during order creation.
+
+When an order is confirmed:
+
+1. Order requests inventory reduction through CatalogInterface
+2. Catalog validates stock availability
+3. Catalog reduces stock inside a database transaction
+4. Order status changes to `Confirmed`
+
+Benefits:
+
+* Prevents inventory reservation for abandoned orders
+* More closely resembles real-world e-commerce workflows
+* Keeps inventory logic centralized
 
 ### Category Deletion
 
@@ -282,20 +341,3 @@ GitHub Actions pipeline includes:
 ### Target Runtime
 
 - PHP 8.4
-
----
-
-## Future Improvements
-
-Potential production improvements:
-
-- Customer entity extraction
-- Inventory reservation
-- Order status workflow events
-- Search and filtering
-- Product images
-- Shopping cart
-- Authentication and authorization
-- API layer
-- Docker deployment
-
