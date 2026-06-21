@@ -1,18 +1,73 @@
 <?php
 
+use App\Contracts\CatalogInterface;
+use App\Data\OrderedProduct;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Modules\Order\Enums\OrderStatus;
 use Modules\Order\Models\Order;
 
 new class extends Component {
     public int $orderId;
     public object $order;
 
+    private function catalog(): CatalogInterface
+    {
+        return app(CatalogInterface::class);
+    }
+
     public function mount(): void
     {
         $this->order = Order::where('id', $this->orderId)
             ->firstOrFail();
+    }
+
+    /**
+     * @return OrderedProduct[]
+     */
+    private function orderedProducts(): array
+    {
+        return $this->order->items
+            ->map(fn ($item): OrderedProduct => new OrderedProduct(
+                id: (int) $item->product_id,
+                categoryName: null,
+                name: $item->product_name,
+                description: '',
+                price: (float) $item->unit_price,
+                quantity: (int) $item->quantity,
+            ))
+            ->values()
+            ->all();
+    }
+
+    public function confirmOrder(): void
+    {
+        if ($this->order->status !== OrderStatus::Pending) {
+            $this->addError('order', 'Only pending orders can be confirmed.');
+
+            return;
+        }
+
+        try {
+            $this->catalog()->reduceStockOrFail($this->orderedProducts());
+        } catch (\RuntimeException $exception) {
+            $this->addError('order', $exception->getMessage());
+
+            return;
+        }
+
+        DB::table('orders')
+            ->where('id', $this->order->id)
+            ->update([
+                'status' => OrderStatus::Confirmed->value,
+                'updated_at' => now(),
+            ]);
+
+        $this->order = Order::where('id', $this->orderId)
+            ->firstOrFail();
+
+        session()->flash('status', 'Order has been confirmed successfully.');
     }
 };
 ?>
@@ -28,12 +83,36 @@ new class extends Component {
                         View customer information, selected products, quantities, and order status.
                     </p>
                 </div>
+                <div class="flex flex-col items-end gap-3">
+                    <span
+                        class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset {{ $order->status->badgeClasses() }}">
+                        {{ $order->status->label() }}
+                    </span>
 
-                <span
-                    class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset {{ $order->status->badgeClasses() }}">
-                    {{ $order->status->label() }}
-                </span>
+                    @if ($order->status === \Modules\Order\Enums\OrderStatus::Pending)
+                        <button
+                            type="button"
+                            wire:click="confirmOrder"
+                            wire:loading.attr="disabled"
+                            class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-gray-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            Confirm order
+                        </button>
+                    @endif
+                </div>
             </div>
+
+            @if (session('status'))
+                <div class="mb-6 rounded-lg border border-green-800 bg-green-950/60 px-4 py-3 text-sm text-green-200">
+                    {{ session('status') }}
+                </div>
+            @endif
+
+            @error('order')
+                <div class="mb-6 rounded-lg border border-red-800 bg-red-950/60 px-4 py-3 text-sm text-red-200">
+                    {{ $message }}
+                </div>
+            @enderror
 
             <div class="grid gap-6 lg:grid-cols-[1fr_360px]">
                 <div class="overflow-hidden rounded-xl border border-gray-800 bg-gray-900 shadow-sm">

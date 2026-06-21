@@ -1,7 +1,6 @@
 <?php
 
 use App\Contracts\CatalogInterface;
-use App\Data\OrderedProduct;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
@@ -91,23 +90,6 @@ new class extends Component {
         }
     }
 
-    /**
-     * @return OrderedProduct[]
-     */
-    private function orderedProducts(): array
-    {
-        return collect($this->items)
-            ->map(fn(array $item): OrderedProduct => new OrderedProduct(
-                id: (int)$item['id'],
-                categoryName: $item['categoryName'],
-                name: $item['name'],
-                description: $item['description'],
-                price: (float)$item['price'],
-                quantity: (int)$item['quantity'],
-            ))
-            ->values()
-            ->all();
-    }
 
     public function createOrder(): void
     {
@@ -120,14 +102,6 @@ new class extends Component {
             'items.*.quantity' => ['required', 'integer', 'min:1'],
         ]);
 
-        try {
-            $this->catalog()->reduceStockOrFail($this->orderedProducts());
-        } catch (\RuntimeException $exception) {
-            $this->refreshSelectedProductSnapshots();
-            $this->addError('items', $exception->getMessage());
-
-            return;
-        }
 
         DB::transaction(function (): void {
             $orderId = DB::table('orders')->insertGetId([
@@ -164,33 +138,6 @@ new class extends Component {
         ]);
 
         session()->flash('status', 'Order has been created successfully.');
-    }
-
-    private function refreshSelectedProductSnapshots(): void
-    {
-        $snapshots = $this->catalog()
-            ->availableProducts($this->orderedProducts())
-            ->keyBy('id');
-
-        foreach ($this->items as $productId => $item) {
-            $snapshot = $snapshots->get($productId);
-
-            if (!$snapshot) {
-                unset($this->items[$productId]);
-
-                continue;
-            }
-
-            $this->items[$productId]['name'] = $snapshot->name;
-            $this->items[$productId]['categoryName'] = $snapshot->category?->name;
-            $this->items[$productId]['description'] = (string)($snapshot->description ?? '');
-            $this->items[$productId]['price'] = (float)$snapshot->price;
-            $this->items[$productId]['availableQuantity'] = (int)$snapshot->stock_quantity;
-            $this->items[$productId]['quantity'] = min(
-                (int)$item['quantity'],
-                max(1, (int)$snapshot->stock_quantity),
-            );
-        }
     }
 };
 ?>
