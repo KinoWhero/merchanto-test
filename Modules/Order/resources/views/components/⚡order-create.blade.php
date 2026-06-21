@@ -1,17 +1,14 @@
 <?php
 
-use Illuminate\Pagination\LengthAwarePaginator;
+use App\Contracts\CatalogInterface;
+use App\Data\OrderedProduct;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
-use Livewire\WithPagination;
-use Modules\Catalog\Models\Product;
 use Modules\Order\Enums\OrderStatus;
 
 new class extends Component {
-    use WithPagination;
-
-    public int $perPage = 10;
 
     public string $customerName = '';
 
@@ -22,17 +19,19 @@ new class extends Component {
     public ?string $customerAddress = null;
 
     /**
-     * @var array<int, array{id: int, name: string, price: string, stock_quantity: int, quantity: int}>
+     * @var array<int, array{id: int, categoryName: ?string, name: string, description: string, price: float, availableQuantity: int, quantity: int}>
      */
     public array $items = [];
 
     #[Computed]
-    public function products(): LengthAwarePaginator
+    public function products(): Collection
     {
-        return Product::query()
-            ->with('category')
-            ->orderBy('name')
-            ->paginate($this->perPage);
+        return $this->catalog()->availableProducts();
+    }
+
+    private function catalog(): CatalogInterface
+    {
+        return app(CatalogInterface::class);
     }
 
     #[Computed]
@@ -44,7 +43,7 @@ new class extends Component {
 
     public function addProduct(int $productId): void
     {
-        $product = Product::query()->find($productId);
+        $product = $this->products->firstWhere('id', $productId);
 
         if (!$product) {
             $this->addError('items', 'Selected product is no longer available.');
@@ -57,7 +56,6 @@ new class extends Component {
 
             return;
         }
-
         if (array_key_exists($product->id, $this->items)) {
             $this->items[$product->id]['quantity'] = min(
                 $this->items[$product->id]['quantity'] + 1,
@@ -69,9 +67,11 @@ new class extends Component {
 
         $this->items[$product->id] = [
             'id' => $product->id,
+            'categoryName' => $product->category?->name,
             'name' => $product->name,
-            'price' => (string)$product->price,
-            'stock_quantity' => (int)$product->stock_quantity,
+            'description' => (string)($product->description ?? ''),
+            'price' => (float)$product->price,
+            'availableQuantity' => (int)$product->stock_quantity,
             'quantity' => 1,
         ];
     }
@@ -85,10 +85,28 @@ new class extends Component {
     {
         foreach ($this->items as $productId => $item) {
             $quantity = max(1, $item['quantity']);
-            $stockQuantity = max(1, $item['stock_quantity']);
+            $availableQuantity = max(1, $item['availableQuantity']);
 
-            $this->items[$productId]['quantity'] = min($quantity, $stockQuantity);
+            $this->items[$productId]['quantity'] = min($quantity, $availableQuantity);
         }
+    }
+
+    /**
+     * @return OrderedProduct[]
+     */
+    private function orderedProducts(): array
+    {
+        return collect($this->items)
+            ->map(fn(array $item): OrderedProduct => new OrderedProduct(
+                id: (int)$item['id'],
+                categoryName: $item['categoryName'],
+                name: $item['name'],
+                description: $item['description'],
+                price: (float)$item['price'],
+                quantity: (int)$item['quantity'],
+            ))
+            ->values()
+            ->all();
     }
 
     public function createOrder(): void
@@ -101,6 +119,15 @@ new class extends Component {
             'items' => ['required', 'array', 'min:1'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
         ]);
+
+        try {
+            $this->catalog()->reduceStockOrFail($this->orderedProducts());
+        } catch (\RuntimeException $exception) {
+            $this->refreshSelectedProductSnapshots();
+            $this->addError('items', $exception->getMessage());
+
+            return;
+        }
 
         DB::transaction(function (): void {
             $orderId = DB::table('orders')->insertGetId([
@@ -137,6 +164,33 @@ new class extends Component {
         ]);
 
         session()->flash('status', 'Order has been created successfully.');
+    }
+
+    private function refreshSelectedProductSnapshots(): void
+    {
+        $snapshots = $this->catalog()
+            ->availableProducts($this->orderedProducts())
+            ->keyBy('id');
+
+        foreach ($this->items as $productId => $item) {
+            $snapshot = $snapshots->get($productId);
+
+            if (!$snapshot) {
+                unset($this->items[$productId]);
+
+                continue;
+            }
+
+            $this->items[$productId]['name'] = $snapshot->name;
+            $this->items[$productId]['categoryName'] = $snapshot->category?->name;
+            $this->items[$productId]['description'] = (string)($snapshot->description ?? '');
+            $this->items[$productId]['price'] = (float)$snapshot->price;
+            $this->items[$productId]['availableQuantity'] = (int)$snapshot->stock_quantity;
+            $this->items[$productId]['quantity'] = min(
+                (int)$item['quantity'],
+                max(1, (int)$snapshot->stock_quantity),
+            );
+        }
     }
 };
 ?>
@@ -186,14 +240,14 @@ new class extends Component {
                                     <td class="px-6 py-4">
                                         <div class="font-medium text-white">{{ $product->name }}</div>
                                         @if ($product->description)
-                                            <div class="mt-1 max-w-60 truncate text-xs text-gray-400">
+                                            <div class="mt-1 max-w-55 truncate text-xs text-gray-400">
                                                 {{ $product->description }}
                                             </div>
                                         @endif
                                     </td>
 
                                     <td class="px-6 py-4 text-gray-300">
-                                        {{ $product->category?->name ?? 'Uncategorized' }}
+                                        {{ $product->categoryName ?? 'Uncategorized' }}
                                     </td>
 
                                     <td class="px-6 py-4 font-medium text-gray-100">
@@ -226,9 +280,6 @@ new class extends Component {
                         </table>
                     </div>
 
-                    <div class="border-t border-gray-800 px-6 py-4">
-                        {{ $this->products->links() }}
-                    </div>
                 </div>
 
                 <form wire:submit="createOrder" class="space-y-6">
@@ -299,7 +350,7 @@ new class extends Component {
                                             <div class="font-medium text-white">{{ $item['name'] }}</div>
                                             <div class="mt-1 text-xs text-gray-400">
                                                 €{{ number_format((float) $item['price'], 2) }}
-                                                · {{ $item['stock_quantity'] }} available
+                                                · {{ $item['availableQuantity'] }} available
                                             </div>
                                         </div>
 
@@ -319,7 +370,7 @@ new class extends Component {
                                             id="quantity-{{ $productId }}"
                                             type="number"
                                             min="1"
-                                            max="{{ $item['stock_quantity'] }}"
+                                            max="{{ $item['availableQuantity'] }}"
                                             wire:model.live="items.{{ $productId }}.quantity"
                                             class="w-24 rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-right text-sm text-white outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
                                         >

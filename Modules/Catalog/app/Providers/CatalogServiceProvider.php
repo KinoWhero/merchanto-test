@@ -2,7 +2,9 @@
 
 namespace Modules\Catalog\Providers;
 
+use App\Contracts\CatalogInterface;
 use Livewire\Livewire;
+use Modules\Catalog\Services\CatalogService;
 use Nwidart\Modules\Support\ModuleServiceProvider;
 
 class CatalogServiceProvider extends ModuleServiceProvider
@@ -43,6 +45,16 @@ class CatalogServiceProvider extends ModuleServiceProvider
     // {
     //     $schedule->command('inspire')->hourly();
     // }
+
+    public function register(): void
+    {
+        parent::register();
+
+        $this->app->singleton(
+            CatalogInterface::class,
+            CatalogService::class,
+        );
+    }
 
     public function boot(): void
     {
