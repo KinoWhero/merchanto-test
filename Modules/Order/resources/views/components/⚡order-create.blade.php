@@ -186,7 +186,7 @@ new class extends Component {
                                     <td class="px-6 py-4">
                                         <div class="font-medium text-white">{{ $product->name }}</div>
                                         @if ($product->description)
-                                            <div class="mt-1 max-w-sm truncate text-xs text-gray-400">
+                                            <div class="mt-1 max-w-60 truncate text-xs text-gray-400">
                                                 {{ $product->description }}
                                             </div>
                                         @endif
