@@ -15,7 +15,6 @@ class CatalogService implements CatalogInterface
     public function handle() {}
 
     /**
-     * @param array|null $orderedProducts
      * @return Collection<int, OrderedProduct>
      */
     public function availableProducts(?array $orderedProducts = null): Collection
@@ -45,7 +44,6 @@ class CatalogService implements CatalogInterface
     }
 
     /**
-     * @param array $orderedProducts
      * @throws Throwable
      */
     public function reduceStockOrFail(array $orderedProducts): void
