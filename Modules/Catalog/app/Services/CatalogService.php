@@ -14,6 +14,10 @@ class CatalogService implements CatalogInterface
 {
     public function handle() {}
 
+    /**
+     * @param array|null $orderedProducts
+     * @return Collection<int, OrderedProduct>
+     */
     public function availableProducts(?array $orderedProducts = null): Collection
     {
         $query = Product::query()
@@ -28,10 +32,20 @@ class CatalogService implements CatalogInterface
             $query->whereIn('products.id', $productIds);
         }
 
-        return $query->get();
+        return $query
+            ->get()
+            ->map(fn (Product $product): OrderedProduct => new OrderedProduct(
+                id: $product->id,
+                categoryName: $product->category()->value('name'),
+                name: $product->name,
+                description: (string) ($product->description ?? ''),
+                price: (float) $product->price,
+                quantity: (int) $product->stock_quantity,
+            ));
     }
 
     /**
+     * @param array $orderedProducts
      * @throws Throwable
      */
     public function reduceStockOrFail(array $orderedProducts): void

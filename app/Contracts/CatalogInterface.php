@@ -8,7 +8,8 @@ use Illuminate\Support\Collection;
 interface CatalogInterface
 {
     /**
-     * @param  OrderedProduct[]  $orderedProducts
+     * @param  OrderedProduct[]|null  $orderedProducts
+     * @return Collection<int, OrderedProduct>
      */
     public function availableProducts(?array $orderedProducts = null): Collection;
 

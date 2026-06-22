@@ -50,7 +50,7 @@ new class extends Component {
             return;
         }
 
-        if ((int)$product->stock_quantity <= 0) {
+        if ((int)$product->quantity <= 0) {
             $this->addError('items', 'Selected product is out of stock.');
 
             return;
@@ -58,7 +58,7 @@ new class extends Component {
         if (array_key_exists($product->id, $this->items)) {
             $this->items[$product->id]['quantity'] = min(
                 $this->items[$product->id]['quantity'] + 1,
-                (int)$product->stock_quantity,
+                (int)$product->quantity,
             );
 
             return;
@@ -66,11 +66,11 @@ new class extends Component {
 
         $this->items[$product->id] = [
             'id' => $product->id,
-            'categoryName' => $product->category?->name,
+            'categoryName' => $product->categoryName,
             'name' => $product->name,
             'description' => (string)($product->description ?? ''),
             'price' => (float)$product->price,
-            'availableQuantity' => (int)$product->stock_quantity,
+            'availableQuantity' => (int)$product->quantity,
             'quantity' => 1,
         ];
     }
@@ -202,7 +202,7 @@ new class extends Component {
                                     </td>
 
                                     <td class="px-6 py-4 text-gray-300">
-                                        {{ $product->stock_quantity }}
+                                        {{ $product->quantity }}
                                     </td>
 
                                     <td class="px-6 py-4 text-right">
@@ -210,7 +210,7 @@ new class extends Component {
                                             type="button"
                                             wire:click="addProduct({{ $product->id }})"
                                             class="rounded-lg bg-amber-500 px-3 py-2 text-xs font-semibold text-gray-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-50"
-                                            @disabled($product->stock_quantity <= 0)
+                                            @disabled($product->quantity <= 0)
                                         >
                                             Add
                                         </button>
