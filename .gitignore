@@ -23,6 +23,15 @@ yarn-error.log
 /.vscode
 /.zed
 
+.DS_Store
+**/.DS_Store
+
 # Project exclude paths
 /storage/app/
-/storage/framework/
+/storage/framework/*
+!/storage/framework/cache/
+!/storage/framework/cache/.gitkeep
+!/storage/framework/sessions/
+!/storage/framework/sessions/.gitkeep
+!/storage/framework/views/
+!/storage/framework/views/.gitkeep
