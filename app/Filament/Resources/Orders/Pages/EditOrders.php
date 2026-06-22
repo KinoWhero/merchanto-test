@@ -17,6 +17,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Modules\Order\Enums\OrderStatus;
+use Modules\Order\Models\Order;
 
 class EditOrders extends EditRecord
 {
@@ -110,7 +111,16 @@ class EditOrders extends EditRecord
                                     ->dehydrated(),
                             ])
                             ->columns(4)
-                            ->deletable()
+                            ->disabled(fn (): bool => in_array(
+                                $this->order()->status,
+                                [OrderStatus::Shipped, OrderStatus::Delivered],
+                                true,
+                            ))
+                            ->deletable(fn (): bool => ! in_array(
+                                $this->order()->status,
+                                [OrderStatus::Shipped, OrderStatus::Delivered],
+                                true,
+                            ))
                             ->reorderable(false)
                             ->addable(false),
                     ]),
@@ -125,5 +135,21 @@ class EditOrders extends EditRecord
             ForceDeleteAction::make(),
             RestoreAction::make(),
         ];
+    }
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if (in_array($this->order()->status, [OrderStatus::Shipped, OrderStatus::Delivered], true)) {
+            unset($data['items']);
+        }
+
+        return $data;
+    }
+
+    private function order(): Order
+    {
+        /** @var Order $order */
+        $order = $this->record;
+
+        return $order;
     }
 }
