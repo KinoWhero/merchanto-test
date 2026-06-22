@@ -204,14 +204,7 @@ Configure database credentials in `.env`.
 ### Database
 
 ```bash
-php artisan migrate
-php artisan module:migrate
-```
-
-### Create Filament User
-
-```bash
-php artisan make:filament-user
+php artisan migrate --seed
 ```
 
 ### Build Assets
@@ -236,6 +229,12 @@ Available at:
 /admin
 ```
 
+**Initial Admin user**
+```text
+email: admin@mail.com
+password: admin
+```
+
 ### Features
 
 - Product Categories CRUD
@@ -258,14 +257,15 @@ Features:
 - Product browsing
 - Pagination
 
-### Order Creation
+### Orders
 
 ```text
-/orders/create
+/orders
 ```
 
 Features:
 
+- Order browsing and creation
 - Product selection
 - Quantity management
 - Automatic total calculation
