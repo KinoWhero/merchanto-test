@@ -136,6 +136,7 @@ class EditOrders extends EditRecord
             RestoreAction::make(),
         ];
     }
+
     protected function mutateFormDataBeforeSave(array $data): array
     {
         if (in_array($this->order()->status, [OrderStatus::Shipped, OrderStatus::Delivered], true)) {
